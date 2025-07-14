@@ -19,6 +19,8 @@ library(grid)
 library(BSgenome.Hsapiens.UCSC.hg19)
 library(R.utils)
 library(shinyjs)
+library(ggplot2)
+library(NMF)
 
 #BiocManager::install(c(
 #    "BSgenome.Hsapiens.UCSC.hg19",
@@ -3424,7 +3426,6 @@ observeEvent(input$run_trinucleotide, {
         return()
       }
       incProgress(0.3, detail = "Loading genome...")
-      library(genome_pkg, character.only = TRUE)
       incProgress(0.6, detail = "Extracting trinucleotide matrix...")
       capture_output <- capture.output({
         values$trinucleotide_results <- maftools::trinucleotideMatrix(
@@ -3626,7 +3627,6 @@ observeEvent(input$run_estimate_signatures, {
         return()
       }
       incProgress(0.3, detail = "Loading NMF package...")
-      library(NMF)
       incProgress(0.6, detail = "Running signature estimation...")
 
       # Real-time output capture for progress bar
@@ -4065,8 +4065,6 @@ output$signature_contributions_table <- DT::renderDataTable({
           if (nrow(math_data) > 0) {
             math_data$Sample <- factor(math_data$Sample, levels = math_data$Sample[order(math_data$MATH_Score)])
             math_data$Highlight <- ifelse(math_data$Sample == input$heterogeneity_sample, "Current", "Other")
-            
-            library(ggplot2)
             ggplot(math_data, aes(x = Sample, y = MATH_Score, fill = Highlight)) +
               geom_col() +
               scale_fill_manual(values = c("Current" = "#e74c3c", "Other" = "#3498db")) +
